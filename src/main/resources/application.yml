@@ -1,0 +1,36 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: 'ContasApagar'
+  main:
+    banner-mode: off
+  output:
+    ansi:
+      enabled: always
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/contasapagar
+    username: da
+    password: c@ntAsApAgAr
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 781422071818-s35lf88j215srkmc1n8o1q1cp195o05i.apps.googleusercontent.com
+            client-secret: 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

@@ -1,0 +1,24 @@
+
+services:
+  db:
+    image: postgres
+    container_name: db
+    environment:
+      POSTGRES_DB: contasapagar
+      POSTGRES_USER: da
+      POSTGRES_PASSWORD: c@ntAsApAgAr
+    ports:
+      - 5432:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: contasapagar_app
+    ports:
+      - 8081:8081
+    depends_on:
+      - db
+
+volumes:
+  db-data: null
