@@ -1,10 +1,11 @@
-package com.fwbittencourt.accountspayable.domain.model;
+package com.fwbittencourt.accountspayable.interfaces.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * @author <Filipe Bittencourt> on 08/06/24
@@ -16,11 +17,11 @@ import java.time.LocalDate;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "conta")
-public class Account {
+@Table(name = "contas")
+public class TbPayableEntry {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "data_vencimento", nullable = false)
     private LocalDate dueDate;
