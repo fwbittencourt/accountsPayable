@@ -40,8 +40,11 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(
                 auth -> auth
+                    .requestMatchers("**/swagger-config").permitAll()
+                    .requestMatchers("/actuator/**").permitAll()
+                    .requestMatchers("/swagger-ui/**").permitAll()
+                    .requestMatchers("/v3/api-docs").permitAll()
                     .requestMatchers("/authenticate").permitAll()
-                    .requestMatchers("/actuator/health").permitAll()
                     .anyRequest().authenticated())
             .httpBasic(Customizer.withDefaults())
             .oauth2ResourceServer(

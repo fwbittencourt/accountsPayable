@@ -1,6 +1,7 @@
 package com.fwbittencourt.accountspayable.infra.security.controller;
 
 import com.fwbittencourt.accountspayable.infra.security.domain.service.AuthenticationService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ public class AuthenticationController {
     private AuthenticationService authenticationService;
 
     @PostMapping
+    @Operation(summary = "Endpoint para autenticação que retorna um token JWT")
     public String authenticate(Authentication authentication) {
         return authenticationService.authenticate(authentication);
     }
