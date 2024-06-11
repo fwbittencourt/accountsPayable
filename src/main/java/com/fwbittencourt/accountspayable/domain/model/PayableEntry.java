@@ -1,5 +1,7 @@
 package com.fwbittencourt.accountspayable.domain.model;
 
+import com.fwbittencourt.accountspayable.domain.enums.EnStatus;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,16 +14,12 @@ import java.util.UUID;
  */
 @Getter
 @Setter
+@AllArgsConstructor
 public class PayableEntry {
     private UUID id;
-
-    private LocalDate dueDate;
-
-    private LocalDate paymentDate;
-
-    private BigDecimal value;
-
     private String description;
-
-    private String status;
+    private LocalDate dueDate;
+    private LocalDate paymentDate;
+    private EnStatus status;
+    private BigDecimal value;
 }

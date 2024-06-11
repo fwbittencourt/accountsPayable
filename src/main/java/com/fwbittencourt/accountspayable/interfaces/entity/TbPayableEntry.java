@@ -1,5 +1,6 @@
 package com.fwbittencourt.accountspayable.interfaces.entity;
 
+import com.fwbittencourt.accountspayable.domain.enums.EnStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,6 +36,7 @@ public class TbPayableEntry {
     @Column(name = "descricao", length = 255)
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "situacao", nullable = false)
-    private String status;
+    private EnStatus status;
 }
