@@ -19,7 +19,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/contasapagar
+    url: jdbc:postgresql://db:5432/contasapagar
     username: da
     password: c@ntAsApAgAr
 

@@ -3,11 +3,17 @@ API simples de um sistema de contas a pagar.
 
 O sistema permitirá realizar o CRUD de uma conta a pagar, alterar a situação dela quando for efetuado pagamento, obter informações sobre as contas cadastradas no banco de dados, e importar um lote de contas de um arquivo CSV.
 
-# Desafio Backend
-
-Este é um checklist para um desafio de implementação de uma API REST para um sistema simples de contas a pagar.
+# Instruções de iniciais
+1. Clonar o projeto
+2. Rodar com usando Docker compose ( docker-compose up -d )
+3. Acessar http://localhost:8080/swagger-ui/index.html no navegador
+4. Credenciais: usuário: username senha: password 
+5. IMPORTANTE: 
+- para simplificar fica **definido** que o arquivo CSV a ser importado usa "," como delimitador de campos;
+- não tem cabeçalho.
 
 ## Checklist
+Este é o checklist desse de API REST para um sistema simples de contas a pagar.
 
 ### Requisitos Gerais
 
@@ -44,4 +50,5 @@ Este é um checklist para um desafio de implementação de uma API REST para um 
     - O arquivo será consumido via API.
 - [x] Implementar testes unitários.
 
-Use este checklist para guiá-lo na implementação do projeto. Certifique-se de marcar as tarefas à medida que as conclui. Boa sorte!
+
+PS. Aprecio sugestões.

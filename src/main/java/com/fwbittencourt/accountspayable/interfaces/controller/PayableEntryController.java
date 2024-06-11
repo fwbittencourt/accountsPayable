@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -37,7 +36,7 @@ public class PayableEntryController {
     private PayableEntryService payableEntryService;
 
     @GetMapping
-    @Operation(summary = "Listar contas a pagar", description = "Lista contas a pagar de acordo com o filtro")
+    @Operation(summary = "Listar contas a pagar", description = "Obtêm a lista de contas a pagar, com filtro de data de vencimento situação e descrição;")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<MyPage<PayableEntryDto>> getPayableEntryListFilter(
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate initialDueDate,
@@ -52,10 +51,9 @@ public class PayableEntryController {
 
         return ResponseEntity.ok(payableEntryDtoPage);
     }
-    
-    
+
     @PostMapping
-    @Operation(summary = "Cadastra uma conta a pagar")
+    @Operation(summary = "Cadastra uma conta a pagar", description = "Veja PayableEntryDto na sessão de Schemas abaixo")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<PayableEntryDto> createPayableEntry(@RequestBody PayableEntryDto payableEntryDto) {
         log.info("{} Chamando serviço para criar nova entrada para contas a pagar. Descrição: {}",
@@ -90,7 +88,7 @@ public class PayableEntryController {
     }
 
     @PutMapping("/{id}/situacao")
-    @Operation(summary = "Alterar a situação de uma conta a pagar pelo ID")
+    @Operation(summary = "Alterar a situação de uma conta a pagar pelo ID", description = "Opções disponíveis OPEN, PENDING_APPROVAL_OVERDUE, PAID, CANCELLED")
     public ResponseEntity<PayableEntryDto> updateStatus(@PathVariable UUID id, @RequestParam String status) {
         log.info("Chamando serviço para alterar a situação da conta a pagar ID: {}", id);
 
@@ -111,9 +109,9 @@ public class PayableEntryController {
         return ResponseEntity.ok(totalPaid);
     }
 
-    @Operation(summary = "Importar lote de contas a pagar")
+    @Operation(summary = "Importar lote de contas a pagar", description = "não tem cabeçalho; Usa \",\" como delimitador de campos")
     @PostMapping(path = "/importar")
-    public ResponseEntity<String> post(@NonNull @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> post(@RequestParam("file") MultipartFile file) {
         log.info("{} Recebendo o aquivo para processar em lote. Tamanho: {} bytes",
             Util.LOG_PREFIX, file.getSize());
 
