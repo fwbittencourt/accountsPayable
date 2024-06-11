@@ -28,8 +28,8 @@ class PayableEntryServiceTest {
         String fileContent = """
             Transport bill,2026-07-15,,OPEN,11100.5
             Eletrict bill,2026-08-15,,OPEN,1100.5
-            Eletrict bill,2024-06-09,,OVERDUE,1100.5
-            Credit card bill,2024-06-06,,OVERDUE,10000.5
+            Eletrict bill,2024-06-09,,PENDING_APPROVAL_OVERDUE,1100.5
+            Credit card bill,2024-06-06,,PENDING_APPROVAL_OVERDUE,10000.5
             """;
 
         payableEntryService.loadCsvFile(fileContent);

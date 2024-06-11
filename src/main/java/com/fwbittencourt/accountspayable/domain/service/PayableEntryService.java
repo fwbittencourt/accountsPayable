@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author <Filipe Bittencourt> on 10/06/24
@@ -40,8 +37,33 @@ public class PayableEntryService {
             Util.LOG_PREFIX, payableEntryDto.description());
 
         final PayableEntry payableEntry = payableEntryMapper.toPayableEntry(payableEntryDto);
+        payableEntry.validate();
         final PayableEntry savedPayableEntry = payableEntryRepository.save(payableEntry);
         return payableEntryMapper.toPayableEntryDto(savedPayableEntry);
+    }
+
+    public PayableEntryDto updatePayableEntry(UUID id, PayableEntryDto payableEntryDto) {
+        log.info("{} Alterando conta a pagar: ID {}", Util.LOG_PREFIX, id);
+
+        Optional<PayableEntry> optionalPayableEntry = payableEntryRepository.findById(id);
+        return optionalPayableEntry.map(atualPayableEntry -> {
+                atualPayableEntry.setDescription(payableEntryDto.description());
+                atualPayableEntry.setDueDate(payableEntryDto.dueDate());
+                atualPayableEntry.setPaymentDate(payableEntryDto.paymentDate());
+                atualPayableEntry.setStatusIfValid(payableEntryDto.status());
+                atualPayableEntry.setValue(payableEntryDto.value());
+                atualPayableEntry.validate();
+                return payableEntryMapper.toPayableEntryDto(payableEntryRepository.save(atualPayableEntry));
+            })
+            .orElseThrow(PayableEntryNotFoundException.with(id, "id"));
+    }
+
+    public PayableEntryDto updatePayableEntryStatus(UUID id, EnStatus status) {
+        Optional<PayableEntry> optionalPayableEntry = payableEntryRepository.findById(id);
+        return optionalPayableEntry.map(payableEntry -> {
+            payableEntry.setStatusIfValid(status);
+            return payableEntryMapper.toPayableEntryDto(payableEntryRepository.save(payableEntry));
+        }).orElseThrow(PayableEntryNotFoundException.with(id, "id"));
     }
 
     public PayableEntryDto findById(final UUID id) throws PayableEntryNotFoundException {
@@ -50,7 +72,7 @@ public class PayableEntryService {
         Optional<PayableEntry> optionalPayableEntry = payableEntryRepository.findById(id);
         return optionalPayableEntry
             .map(payableEntry -> payableEntryMapper.toPayableEntryDto(payableEntry))
-            .orElseThrow(() -> new PayableEntryNotFoundException(id, "id"));
+            .orElseThrow(PayableEntryNotFoundException.with(id, "id"));
     }
 
     public MyPage<PayableEntryDto> findAllByFilters(final LocalDate initialDueDate, final LocalDate finalDueDate,
@@ -74,7 +96,7 @@ public class PayableEntryService {
             String[] rows = content.split("\n");
             for (String row : rows) {
                 String[] columns = row.split(",");
-                var payableEntryDto = new PayableEntry(
+                PayableEntry payableEntry = new PayableEntry(
                     null,
                     columns[0],
                     getParseLocalDate(columns[1]),
@@ -83,9 +105,10 @@ public class PayableEntryService {
                     ConverterStringToBigDecimal.convertToBigDecimal(columns[4])
                 );
                 lineCount++;
-                payableEntryDtoToSave.add(payableEntryDto);
+                payableEntry.validate();
+                payableEntryDtoToSave.add(payableEntry);
             }
-            log.info("{} {} Registros de conta a pagar foram importados e salvo no banco de dados",
+            log.info("{} {} Registros de conta a pagar foram importados, e salvando no banco de dados",
                 Util.LOG_PREFIX, lineCount);
             return payableEntryRepository.saveAll(payableEntryDtoToSave);
         } catch (Exception e) {
@@ -97,7 +120,8 @@ public class PayableEntryService {
     }
 
     public BigDecimal getTotalPaidAmount(LocalDate initialDate, LocalDate finalDate) {
-        log.info("{} Calculando valor total pago no período entre {} e {}", Util.LOG_PREFIX, initialDate.toString(), finalDate);
+        log.info("{} Calculando valor total pago no período entre {} e {}",
+            Util.LOG_PREFIX, initialDate.toString(), finalDate);
         return payableEntryRepository.sumPaidAmountBetweenDates(initialDate, finalDate);
     }
 

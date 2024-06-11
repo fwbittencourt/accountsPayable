@@ -7,26 +7,17 @@ import lombok.Getter;
  */
 @Getter
 public enum EnStatus {
-    PAID("Conta paga"),
-    PENDING_APPROVAL("Aguardando aprovação para pagamento"),
-    APPROVED("Pagamento aprovado"),
-    REJECTED("Reprovado"),
-    OPEN("Aguardando pagamento"),
-    PARTIALLY_PAID("Pago parcialmente"),
-    OVERDUE("Pagamento atrasado");
+    OPEN(10, "Aguardando pagamento"),
+    PENDING_APPROVAL_OVERDUE(20,"Aguardando aprovação para pagamento"),
+    APPROVED(30,"Pagamento aprovado"),
+    PAID(40,"Conta paga"),
+    CANCELLED(50,"Conta cancelada");
 
+    private final int code;
     private final String description;
 
-
-    EnStatus(final String description) {
+    EnStatus(int code, final String description) {
+        this.code = code;
         this.description = description;
     }
-
-//    Partially Paid: Parcialmente Pago
-//    Overdue: Atrasado (indica que a fatura não foi paga até a data de vencimento)
-//    Disputed: Em Disputa (indica que há uma contestação ou problema com a fatura)
-//    Scheduled for Payment: Agendado para Pagamento (indica que o pagamento foi programado para uma data futura)
-//    Hold: Em Espera (indica que o pagamento está suspenso por algum motivo)
-//    Cancelled: Cancelado (indica que a fatura foi anulada)
-//    Closed: Fechado (indica que todas as ações necessárias foram concluídas, geralmente após o pagamento)
 }

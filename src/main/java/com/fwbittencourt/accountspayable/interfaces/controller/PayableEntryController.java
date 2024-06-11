@@ -58,15 +58,26 @@ public class PayableEntryController {
     @Operation(summary = "Cadastra uma conta a pagar")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<PayableEntryDto> createPayableEntry(@RequestBody PayableEntryDto payableEntryDto) {
-        log.info("Chamando serviço para criar nova entrada para contas a pagar. Descrição: {}", payableEntryDto.description());
+        log.info("{} Chamando serviço para criar nova entrada para contas a pagar. Descrição: {}",
+            Util.LOG_PREFIX, payableEntryDto.description());
 
         PayableEntryDto savedPayableEntry = payableEntryService.create(payableEntryDto);
-        log.info("Conta {} criada com Sucesso!", savedPayableEntry.description());
+        log.info("{} Conta {} criada com Sucesso!", Util.LOG_PREFIX, savedPayableEntry.description());
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
             .path("/{id}")
             .buildAndExpand(savedPayableEntry.id())
             .toUri();
         return ResponseEntity.created(location).body(savedPayableEntry);
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Alterar uma conta a pagar")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<PayableEntryDto> atualizarConta(@PathVariable UUID id, @RequestBody PayableEntryDto payableEntryDto) {
+        log.info("{} Chamando serviço para alterar conta a pagar: ID {}", Util.LOG_PREFIX, id);
+
+        PayableEntryDto payableEntryDtoUpdated = payableEntryService.updatePayableEntry(id, payableEntryDto);
+        return ResponseEntity.ok(payableEntryDtoUpdated);
     }
 
     @GetMapping(value = "/{id}")
@@ -76,6 +87,14 @@ public class PayableEntryController {
         log.info("Chamando serviço para buscar conta a pagar com o ID: {}", id);
 
         return ResponseEntity.ok(payableEntryService.findById(id));
+    }
+
+    @PutMapping("/{id}/situacao")
+    @Operation(summary = "Alterar a situação de uma conta a pagar pelo ID")
+    public ResponseEntity<PayableEntryDto> updateStatus(@PathVariable UUID id, @RequestParam String status) {
+        log.info("Chamando serviço para alterar a situação da conta a pagar ID: {}", id);
+
+        return ResponseEntity.ok(payableEntryService.updatePayableEntryStatus(id, EnStatus.valueOf(status)));
     }
 
     @GetMapping("/total-pago")
