@@ -35,15 +35,14 @@ public class FilterTbPayableEntryVo {
     private List<EnStatus> status;
     private boolean interno;
 
-    public static FilterTbPayableEntryVo mounterFilter(final LocalDate paymentDate, final LocalDate dueDate,
-        final List<EnStatus> status, final String description, final boolean interno) {
+    public static FilterTbPayableEntryVo buildFilter(final LocalDate initialDueDate, final LocalDate finalDueDate,
+        final List<EnStatus> status, final String description) {
 
         return FilterTbPayableEntryVo.builder()
-            .initialDueDate(dueDate)
-            .finalDueDate(paymentDate)
+            .initialDueDate(initialDueDate)
+            .finalDueDate(finalDueDate)
             .status(status)
             .description(description)
-            .interno(interno)
             .build();
     }
 
@@ -61,26 +60,26 @@ public class FilterTbPayableEntryVo {
 
     private Specification<TbPayableEntry> getPeriodByDueDate() {
         if (initialDueDate != null && finalDueDate != null) {
-            return TbPayableEntrySpecs.dateCreateBetween(initialDueDate, finalDueDate);
+            return TbPayableEntrySpecs.dateCreateBetween(initialDueDate, finalDueDate, "dueDate");
         }
         if (initialDueDate != null) {
-            return TbPayableEntrySpecs.dateCreateGreaterOrEqual(initialDueDate);
+            return TbPayableEntrySpecs.dateCreateGreaterOrEqual(initialDueDate, "dueDate");
         }
         if (finalDueDate != null) {
-            return TbPayableEntrySpecs.dataCreateMinorOrEqual(finalDueDate);
+            return TbPayableEntrySpecs.dataCreateMinorOrEqual(finalDueDate, "dueDate");
         }
         return Specification.where(null);
     }
 
     private Specification<TbPayableEntry> getPeriodByPaymentDate() {
         if (initialPaymentDate != null && finalPaymentDate != null) {
-            return TbPayableEntrySpecs.dateCreateBetween(initialPaymentDate, finalPaymentDate);
+            return TbPayableEntrySpecs.dateCreateBetween(initialPaymentDate, finalPaymentDate, "paymentDate");
         }
         if (initialPaymentDate != null) {
-            return TbPayableEntrySpecs.dateCreateGreaterOrEqual(initialPaymentDate);
+            return TbPayableEntrySpecs.dateCreateGreaterOrEqual(initialPaymentDate, "paymentDate");
         }
         if (finalPaymentDate != null) {
-            return TbPayableEntrySpecs.dataCreateMinorOrEqual(finalPaymentDate);
+            return TbPayableEntrySpecs.dataCreateMinorOrEqual(finalPaymentDate, "paymentDate");
         }
         return Specification.where(null);
     }

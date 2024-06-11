@@ -29,19 +29,20 @@ public class TbPayableEntrySpecs {
         return (root, query, builder) -> root.get("status").in(statuses);
     }
 
-    public static Specification<TbPayableEntry> dateCreateBetween(LocalDate initialDate, LocalDate finalDate) {
+    public static Specification<TbPayableEntry> dateCreateBetween(LocalDate initialDate, LocalDate finalDate,
+        String field) {
         return (root, query, builder) -> builder
-            .between(root.get("dueDate"), initialDate, finalDate);
+            .between(root.get(field), initialDate, finalDate);
     }
 
-    public static Specification<TbPayableEntry> dateCreateGreaterOrEqual(LocalDate initialDate) {
+    public static Specification<TbPayableEntry> dateCreateGreaterOrEqual(LocalDate initialDate, String field) {
         return (root, query, builder) -> builder
-            .greaterThanOrEqualTo(root.get("dueDate"), initialDate);
+            .greaterThanOrEqualTo(root.get(field), initialDate);
     }
 
-    public static Specification<TbPayableEntry> dataCreateMinorOrEqual(LocalDate finalDate) {
+    public static Specification<TbPayableEntry> dataCreateMinorOrEqual(LocalDate finalDate, String field) {
         return (root, query, builder) -> builder
-            .lessThanOrEqualTo(root.get("dueDate"), finalDate);
+            .lessThanOrEqualTo(root.get(field), finalDate);
     }
 
     public static Specification<TbPayableEntry> distinct() {

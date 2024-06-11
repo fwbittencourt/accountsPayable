@@ -8,12 +8,12 @@ import lombok.Getter;
 @Getter
 public enum EnStatus {
     PAID("Conta paga"),
-    PENDING_APPROVAL("Aguardando Aprovação para pagamento"),
+    PENDING_APPROVAL("Aguardando aprovação para pagamento"),
     APPROVED("Pagamento aprovado"),
     REJECTED("Reprovado"),
-    OPEN("Aguardando Pagamento"),
-    PARTIALLY_PAID("Pago Parcialmente"),
-    OVERDUE("Pagamento Atrasado");
+    OPEN("Aguardando pagamento"),
+    PARTIALLY_PAID("Pago parcialmente"),
+    OVERDUE("Pagamento atrasado");
 
     private final String description;
 

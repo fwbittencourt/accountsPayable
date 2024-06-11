@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -69,5 +71,10 @@ public class PayableEntryRepositoryImpl implements PayableEntryRepository {
         return payableEntryJpaRepository.saveAll(payableEntryDtoToSave.stream()
             .map(payableEntryMapperRepository::toTbPayableEntry)
             .toList()).size();
+    }
+
+    @Override
+    public BigDecimal sumPaidAmountBetweenDates(LocalDate initialDate, LocalDate finalDate) {
+        return payableEntryJpaRepository.sumPaidAmountBetweenDates(initialDate, finalDate);
     }
 }
