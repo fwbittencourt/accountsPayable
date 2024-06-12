@@ -5,7 +5,7 @@ O sistema permitirá realizar o CRUD de uma conta a pagar, alterar a situação 
 
 # Instruções iniciais
 1. Clonar o projeto
-2. Rodar com usando Docker compose ( docker-compose up -d )
+2. Rodar com usando Docker compose ([mvn clean install]  [docker-compose up -d])
 3. Acessar http://localhost:8080/swagger-ui/index.html no navegador
 4. Credenciais: usuário: username senha: password 
 5. IMPORTANTE: 
