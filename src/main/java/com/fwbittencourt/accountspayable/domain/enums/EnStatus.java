@@ -7,17 +7,16 @@ import lombok.Getter;
  */
 @Getter
 public enum EnStatus {
-    OPEN(10, "Aguardando pagamento"),
-    PENDING_APPROVAL_OVERDUE(20,"Aguardando aprovação para pagamento"),
-    APPROVED(30,"Pagamento aprovado"),
-    PAID(40,"Conta paga"),
-    CANCELLED(50,"Conta cancelada");
+    OPEN("Aguardando pagamento"),
+    PENDING_APPROVAL_OVERDUE("Aguardando aprovação para pagamento"),
+    APPROVED("Pagamento aprovado"),
+    REJECTED("Reprovado"),
+    PAID("Conta paga"),
+    CANCELLED("Conta cancelada");
 
-    private final int code;
     private final String description;
 
-    EnStatus(int code, final String description) {
-        this.code = code;
+    EnStatus(final String description) {
         this.description = description;
     }
 }

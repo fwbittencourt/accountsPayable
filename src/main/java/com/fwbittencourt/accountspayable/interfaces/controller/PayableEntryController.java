@@ -117,9 +117,9 @@ public class PayableEntryController {
 
         if (file.isEmpty()) return ResponseEntity.ok("O arquivo está vazio");
 
-        log.info("{} Chamando serviço para carregar o arquivo CSV", Util.LOG_PREFIX);
         try {
-            long linesProcessed = payableEntryService.loadCsvFile(new String(file.getBytes()));
+            log.info("{} Importando os dados do arquivo CSV...", Util.LOG_PREFIX);
+            long linesProcessed = payableEntryService.loadCsvFileContent(new String(file.getBytes()));
             return ResponseEntity.ok("Arquivo carregado com sucesso. Linhas processadas: " + linesProcessed);
         } catch (IOException e) {
             log.error("{} Erro ao processar o arquivo", Util.LOG_PREFIX);

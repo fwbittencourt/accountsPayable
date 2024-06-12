@@ -87,8 +87,8 @@ public class PayableEntryService {
             .map(payableEntryMapper::toPayableEntryDto);
     }
 
-    public long loadCsvFile(String content) {
-        log.info("{} Importando os dados do arquivo CSV...", Util.LOG_PREFIX);
+    public long loadCsvFileContent(String content) {
+        log.info("{} Processando os dados do arquivo CSV...", Util.LOG_PREFIX);
 
         var lineCount = 1L;
         try {
@@ -98,17 +98,17 @@ public class PayableEntryService {
                 String[] columns = row.split(",");
                 PayableEntry payableEntry = new PayableEntry(
                     null,
-                    columns[0],
+                    columns[0].trim(),
                     getParseLocalDate(columns[1]),
                     getParseLocalDate(columns[2]),
                     EnStatus.valueOf(columns[3]),
                     ConverterStringToBigDecimal.convertToBigDecimal(columns[4])
                 );
-                lineCount++;
                 payableEntry.validate();
                 payableEntryDtoToSave.add(payableEntry);
+                lineCount++;
             }
-            log.info("{} {} Registros de conta a pagar foram importados, e salvando no banco de dados",
+            log.info("{} {} Registros de conta a pagar foram importados, salvando-os no banco de dados",
                 Util.LOG_PREFIX, lineCount);
             return payableEntryRepository.saveAll(payableEntryDtoToSave);
         } catch (Exception e) {

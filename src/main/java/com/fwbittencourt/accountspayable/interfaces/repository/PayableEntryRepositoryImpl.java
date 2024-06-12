@@ -39,22 +39,13 @@ public class PayableEntryRepositoryImpl implements PayableEntryRepository {
         log.info("{} Salvando no banco de dados uma nova conta a pagar: {}", Util.LOG_PREFIX, payableEntry.toString());
         TbPayableEntry tbPayableEntry = payableEntryMapperRepository.toTbPayableEntry(payableEntry);
         TbPayableEntry savedTbPayableEntry = payableEntryJpaRepository.save(tbPayableEntry);
-        log.info("Conta salva com Sucesso! Id: {}, descrição: {}",
-            savedTbPayableEntry.getId(), savedTbPayableEntry.getDescription());
+        log.info("Conta salva com Sucesso! {}", savedTbPayableEntry);
         return payableEntryMapperRepository.toPayableEntry(savedTbPayableEntry);
     }
 
     @Override
-    public List<PayableEntry> findAllPayableEntries() {
-        List<TbPayableEntry> tbPayableEntries = payableEntryJpaRepository.findAll();
-        log.info("{} Buscando no banco todos as contas cadastradas no sistema: {}", Util.LOG_PREFIX, tbPayableEntries);
-        return tbPayableEntries.stream()
-            .map(payableEntryMapperRepository::toPayableEntry)
-            .toList();
-    }
-
-    @Override
     public Optional<PayableEntry> findById(UUID id) {
+        log.info("{} Buscando no banco a conta a pagar pelo id: {}", Util.LOG_PREFIX, id);
         TbPayableEntry byId = payableEntryJpaRepository.findById(id).orElse(null);
         return Optional.ofNullable(payableEntryMapperRepository.toPayableEntry(byId));
     }
@@ -62,12 +53,13 @@ public class PayableEntryRepositoryImpl implements PayableEntryRepository {
     @Override
     public MyPage<PayableEntry> findAllByFilters(Specification<TbPayableEntry> payableEntrySpecification,
         Pageable pageable) {
+        log.info("{} Buscando no banco pelas specifications: {}", Util.LOG_PREFIX, payableEntrySpecification.toString());
         Page<TbPayableEntry> tbPayableEntries = payableEntryJpaRepository.findAll(payableEntrySpecification, pageable);
         return payableEntryMapperRepository.mapPageToPayableEntryPage(tbPayableEntries);
     }
 
     @Override public long saveAll(List<PayableEntry> payableEntryDtoToSave) {
-
+        log.info("{} Salvando em lote no banco de dados. Quantidade: {}", Util.LOG_PREFIX, payableEntryDtoToSave.size());
         return payableEntryJpaRepository.saveAll(payableEntryDtoToSave.stream()
             .map(payableEntryMapperRepository::toTbPayableEntry)
             .toList()).size();
@@ -75,6 +67,8 @@ public class PayableEntryRepositoryImpl implements PayableEntryRepository {
 
     @Override
     public BigDecimal sumPaidAmountBetweenDates(LocalDate initialDate, LocalDate finalDate) {
+        log.info("{} Buscando no banco valor total de contas pagas entre o período de {} a {}",
+            Util.LOG_PREFIX, initialDate, finalDate);
         return payableEntryJpaRepository.sumPaidAmountBetweenDates(initialDate, finalDate);
     }
 }

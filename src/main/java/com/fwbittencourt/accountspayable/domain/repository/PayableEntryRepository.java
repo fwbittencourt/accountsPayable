@@ -17,7 +17,6 @@ import java.util.UUID;
 
 public interface PayableEntryRepository {
     PayableEntry save(PayableEntry payableEntry);
-    List<PayableEntry> findAllPayableEntries();
     Optional<PayableEntry> findById(UUID id);
     MyPage<PayableEntry> findAllByFilters(Specification<TbPayableEntry> payableEntrySpecification, Pageable pageable);
     long saveAll(List<PayableEntry> payableEntryDtoToSave);

@@ -1,58 +1,70 @@
 package com.fwbittencourt.accountspayable.domain.model;
 
 import com.fwbittencourt.accountspayable.domain.enums.EnStatus;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static java.util.Objects.nonNull;
 
 /**
- * @author <Filipe Bittencourt> on 10/06/24
+  * Autor: Filipe Bittencourt on 10/06/24
  */
-
 @Getter
-@Setter
 @AllArgsConstructor
 public class PayableEntry {
 
+    @NotNull(message = "ID não pode ser nulo")
     private UUID id;
+
+    @Setter
+    @NotBlank(message = "Descrição não pode ser vazia")
     private String description;
 
+    @Setter
+    @NotNull(message = "Data de vencimento não pode ser nula")
+    @FutureOrPresent(message = "Data de vencimento não deve ser no passado")
     private LocalDate dueDate;
 
     private LocalDate paymentDate;
 
+    @NotNull(message = "Status não pode ser nulo")
     private EnStatus status;
 
+    @Setter
+    @NotNull(message = "Valor não pode ser nulo")
+    @DecimalMin(value = "0.01", message = "Valor deve ser maior que zero")
     private BigDecimal value;
 
     public void validate() {
-        List<String> erroList = new ArrayList<>();
-        if (description == null || description.isEmpty()) {
-            erroList.add("A descrição não pode ser nula ou vazia");
+        List<String> errorList = new ArrayList<>();
+        if (description == null || description.isBlank()) {
+            errorList.add("Descrição não pode ser vazia");
         }
-        if (dueDate == null || dueDate.isBefore(LocalDate.now())) {
-            erroList.add("Data de vencimento não pode ser nula ou anterior a hoje");
+        if (dueDate == null || dueDate.isBefore(LocalDate.now()) && status != EnStatus.PENDING_APPROVAL_OVERDUE) {
+            errorList.add("Data de vencimento não pode ser nula ou no passado");
         }
-        if (paymentDate != null && paymentDate.isAfter(dueDate)) {
-            if (nonNull(status) && !this.status.equals(EnStatus.PENDING_APPROVAL_OVERDUE))
-                erroList.add("Esta conta está atrasa e precisá de autorização para ser quitata");
+        if (paymentDate != null && paymentDate.isAfter(LocalDate.now())) {
+            errorList.add("Data de pagamento não poder ser no futuro");
+        }
+        if (paymentDate != null && paymentDate.isAfter(dueDate) && status != EnStatus.PENDING_APPROVAL_OVERDUE) {
+            errorList.add("Esta conta está atrasada e precisa de autorização para ser quitada");
         }
         if (status == null) {
-            erroList.add("O status não pode ser nulo");
+            errorList.add("O status não pode ser nulo");
         }
         if (value == null || value.compareTo(BigDecimal.ZERO) <= 0) {
-            erroList.add("O valor deve ser maior que zero");
+            errorList.add("O valor deve ser maior que zero");
         }
-        if (!erroList.isEmpty()) {
-            throw new IllegalArgumentException(String.join(", ", erroList));
+        if (!errorList.isEmpty()) {
+            throw new IllegalArgumentException(String.join(", ", errorList));
         }
     }
 
@@ -60,55 +72,56 @@ public class PayableEntry {
         return paymentDate != null && paymentDate.isBefore(dueDate);
     }
 
-    public void setStatusIfValid(EnStatus status) {
-        var previousStatus = this.status;
-        if (status.equals(previousStatus)) {
-            setStatus(status);
+    public void setStatusIfValid(EnStatus newStatus) {
+        if (newStatus.equals(this.status)) {
             return;
         }
-        switch (status) {
-            case OPEN, PENDING_APPROVAL_OVERDUE:
-                setStatus(status);
+
+        switch (newStatus) {
+            case OPEN:
+            case PENDING_APPROVAL_OVERDUE:
+            case CANCELLED:
+                this.status = newStatus;
                 break;
             case APPROVED:
-                setStatus(EnStatus.PAID);
-                setPaymentDate(LocalDate.now());
+                this.status = newStatus;
+                this.setStatusIfValid(EnStatus.PAID);
                 break;
             case PAID:
-                if (previousStatus.equals(EnStatus.PENDING_APPROVAL_OVERDUE)) {
+                if (this.status == EnStatus.PENDING_APPROVAL_OVERDUE) {
                     throw new IllegalArgumentException("Esta conta precisa de aprovação para ser paga.");
+                }
+                if (this.status == EnStatus.CANCELLED) {
+                    throw new IllegalArgumentException("Esta conta já está cancelada.");
                 }
                 LocalDate paymentDateCandidate = LocalDate.now();
                 if (isValidatePaymentDate(paymentDateCandidate)) {
-                    setPaymentDate(paymentDateCandidate);
-                    setStatus(EnStatus.PAID);
+                    this.paymentDate = paymentDateCandidate;
+                    this.status = EnStatus.PAID;
                 } else {
-                    setStatus(EnStatus.PENDING_APPROVAL_OVERDUE);
+                    this.status = EnStatus.PENDING_APPROVAL_OVERDUE;
                 }
                 break;
-            case CANCELLED:
-                setStatus(EnStatus.CANCELLED);
+            case REJECTED:
+                this.status = EnStatus.CANCELLED;
                 break;
             default:
                 throw new IllegalArgumentException("Status inválido.");
         }
     }
 
-    private void setStatus(EnStatus status) {
-        this.status = status;
-    }
-
     public void setPaymentDate(LocalDate paymentDate) {
-        if (status.equals(EnStatus.PAID) || status.equals(EnStatus.CANCELLED)) {
+        if (paymentDate == null || paymentDate.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Data de pagamento não pode ser no futuro");
+        }
+        if (status == EnStatus.PAID || status == EnStatus.CANCELLED) {
             this.paymentDate = paymentDate;
             return;
         }
         if (isValidatePaymentDate(paymentDate)) {
             this.paymentDate = paymentDate;
         } else {
-            setStatus(EnStatus.PENDING_APPROVAL_OVERDUE);
+            this.status = EnStatus.PENDING_APPROVAL_OVERDUE;
         }
     }
 }
-
-
