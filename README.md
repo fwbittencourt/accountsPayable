@@ -50,5 +50,3 @@ Este é o checklist de requisitos da API REST implementada.
     - O arquivo será consumido via API.
 - [x] Implementar testes unitários.
 
-
-PS. Aprecio sugestões.
